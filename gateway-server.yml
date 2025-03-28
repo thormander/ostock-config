@@ -1,6 +1,6 @@
 server:
   port: 8072
-
+ 
 eureka:
   instance:
     preferIpAddress: true
@@ -10,48 +10,31 @@ eureka:
     serviceUrl:
       defaultZone: http://eurekaserver:8070/eureka/
       
+
+
+      
 spring:
   cloud:
-    loadbalancer:
-      ribbon:
-        enabled: false
+    loadbalancer.ribbon.enabled: false
     gateway:
-      discovery.locator:
-        enabled: true
-        lowerCaseServiceId: true
-      routes:
+        routes:
         - id: organization-service
           uri: lb://organization-service
           predicates:
-            - Path=/organization/**
+          - Path=/organization/**
           filters:
-            - RewritePath=/organization/(?<path>.*), /$\{path}
+          - RewritePath=/organization/(?<path>.*), /$\{path}
+          - RemoveRequestHeader= Cookie,Set-Cookie
         - id: licensing-service
           uri: lb://licensing-service
           predicates:
-            - Path=/license/**
+          - Path=/license/**
           filters:
-            - RewritePath=/license/(?<path>.*), /$\{path}
-        - id: google
-          uri: https://www.google.com
-          predicates:
-            - Path=/google/**
-          filters:
-            - RewritePath=/google/(?<path>.*), /$\{path}
-        - id: baylor
-          uri: https://www.baylor.edu
-          predicates:
-            - Path=/baylor/**
-          filters:
-            - RewritePath=/baylor/(?<path>.*), /$\{path}
-
-
+          - RewritePath=/license/(?<path>.*), /$\{path}
+          - RemoveRequestHeader= Cookie,Set-Cookie
+            
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-  endpoint:
-    gateway:
-      enabled: true
-
